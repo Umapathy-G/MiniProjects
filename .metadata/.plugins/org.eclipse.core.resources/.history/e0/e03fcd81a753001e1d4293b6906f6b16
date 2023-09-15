@@ -1,0 +1,26 @@
+package com.example.service;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.example.entities.UserReport;
+import com.itextpdf.text.DocumentException;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+@Service
+public interface UserReportService {
+
+	public List<String> getPlanName();
+
+	public List<String> getPlanStatus();
+
+	public List<UserReport> getReportsBySearch(UserReport userReport);
+
+	public void exportToExcel(HttpServletResponse response) throws IOException;
+
+	public void exportToPdf(HttpServletResponse response) throws DocumentException;
+
+}

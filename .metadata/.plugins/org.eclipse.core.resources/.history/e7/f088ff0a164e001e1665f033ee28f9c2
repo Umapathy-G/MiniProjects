@@ -1,0 +1,20 @@
+package com.example.controlller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import com.example.entity.UserAccount;
+
+@Controller
+public class UserController {
+	
+	
+	@GetMapping("/")
+	public String getUserAccForm(Model model) {
+		model.addAttribute("UserData", new UserAccount());
+		return "useraccount";
+	}
+	
+
+}

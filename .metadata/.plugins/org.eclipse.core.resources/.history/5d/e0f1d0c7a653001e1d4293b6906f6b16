@@ -1,0 +1,100 @@
+package com.example.service;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+
+import javax.swing.text.Document;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Service;
+
+import com.example.entities.UserReport;
+import com.example.repo.UserReportRepo;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+@Service
+public class UserReportServiceImpl implements UserReportService {
+
+	@Autowired
+	UserReportRepo userReportRepo;
+
+	@Override
+	public List<String> getPlanName() {
+		return userReportRepo.getUniquePlanName();
+	}
+
+	@Override
+	public List<String> getPlanStatus() {
+		return userReportRepo.getUniquePlanStatus();
+	}
+
+	@Override
+	public List<UserReport> getReportsBySearch(UserReport userReport) {
+		Example<UserReport> of = Example.of(userReport);
+		return userReportRepo.findAll(of);
+	}
+
+	@Override
+	public void exportToExcel(HttpServletResponse response) throws IOException {
+
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		response.setHeader("Content-Disposition", "attachment; filename=UserReport.xlsx");
+
+		List<UserReport> userList = userReportRepo.findAll();
+
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("UserReport");
+
+		Row headerRow = sheet.createRow(0);
+		headerRow.createCell(0).setCellValue("ID");
+		headerRow.createCell(1).setCellValue("Name");
+		headerRow.createCell(2).setCellValue("Price");
+
+		int rowNum = 1;
+		for (UserReport user : userList) {
+			Row row = sheet.createRow(rowNum++);
+			row.createCell(0).setCellValue(user.getId());
+			row.createCell(1).setCellValue(user.getName());
+			row.createCell(2).setCellValue(user.getPhone());
+			row.createCell(3).setCellValue(user.getEmail());
+			row.createCell(4).setCellValue(user.getPlanName());
+			row.createCell(5).setCellValue(user.getEmail());
+		}
+
+		workbook.write(response.getOutputStream());
+		workbook.close();
+	}
+
+	@Override
+	public void exportToPdf() {
+		List<UserReport> products = userReportRepo.findAll();
+
+		Document document = new Document();
+		PdfWriter.getInstance(document, new FileOutputStream("products.pdf"));
+		document.open();
+
+		PdfPTable table = new PdfPTable(3);
+		table.addCell("ID");
+		table.addCell("Name");
+		table.addCell("Price");
+
+		for (UserReport product : products) {
+			table.addCell(String.valueOf(product.getId()));
+			table.addCell(product.getName());
+			table.addCell(String.valueOf(product.getPrice()));
+		}
+
+		document.add(table);
+
+		document.close();
+		return null;
+	}
+
+}

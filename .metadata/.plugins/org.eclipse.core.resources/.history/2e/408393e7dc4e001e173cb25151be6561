@@ -1,0 +1,93 @@
+package com.example.controlller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.entity.UserAccount;
+import com.example.service.UserService;
+
+import jakarta.validation.Valid;
+
+@Controller
+public class UserController {
+
+	@Autowired
+	private UserService userService;
+
+	@GetMapping("/")
+	public String getUserAccForm(Model model) {
+		model.addAttribute("UserData", new UserAccount());
+		return "useraccount";
+	}
+
+	@PostMapping("/saveUser")
+	public String saveUser(@Valid @ModelAttribute("UserData") UserAccount userAccount, BindingResult result,
+			Model model) {
+		if (result.hasErrors()) {
+			return "useraccount";
+		}
+		String message = userService.saveOrUpdateUserAcc(userAccount);
+		System.out.println("Record Inserted :: id= " + userAccount.getId());
+		return "redirect:/saveUserSucces?msg=" + message;
+	}
+
+	@GetMapping("/saveUserSucces")
+	public String saveUserSuccess(@ModelAttribute("UserData") UserAccount userAccount,
+			@RequestParam("msg") String message, Model model) {
+		model.addAttribute("msg", message);
+		return "useraccount";
+	}
+
+	@GetMapping("/userList")
+	public String displayUsers(Model model) {
+		List<UserAccount> allUserAccounts = userService.getAllUserAccounts();
+		model.addAttribute("UserListData", allUserAccounts);
+		return "userlist";
+	}
+
+	@GetMapping("/editUser/{id}")
+	public String editUser(@PathVariable("id") Integer id, @ModelAttribute("UserData") UserAccount userAccount,
+			Model model) {
+		UserAccount userAcc = userService.getUserAcc(id);
+		model.addAttribute("UserData", userAcc);
+		System.out.println(userAcc);
+		return "edituser";
+	}
+
+	@PostMapping("/updateUser/{id}")
+	public String updateUser(@PathVariable("id") Integer id, @Valid @ModelAttribute("UserData") UserAccount userAccount, BindingResult result,
+			Model model) {
+		if (result.hasErrors()) {
+			return "edituser";
+		}
+		UserAccount userAcc = userService.getUserAcc(id);
+		userAcc.setName(userAccount.getName());
+		userAcc.setEmail(userAccount.getEmail());
+		userAcc.setPhone(userAccount.getPhone());
+		userAcc.setGender(userAccount.getGender());
+		userAcc.setDob(userAccount.getDob());
+		userAcc.setSsn(userAccount.getSsn());
+		
+		System.out.println("Updated User Account :: " + userAcc);
+		String saveOrUpdateUserAcc = userService.saveOrUpdateUserAcc(userAcc);
+		System.out.println(saveOrUpdateUserAcc);
+		return "redirect:/userList";
+	}
+
+	@GetMapping("/deleteUser/{id}")
+	public String deleteUser(@PathVariable("id") Integer id, Model model) {
+		userService.deleteUserAcc(id);
+		return "userlist";
+	}
+
+}
+

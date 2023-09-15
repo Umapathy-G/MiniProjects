@@ -1,0 +1,112 @@
+package com.example.service;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Service;
+
+import com.example.entities.UserReport;
+import com.example.repo.UserReportRepo;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+@Service
+public class UserReportServiceImpl implements UserReportService {
+
+	@Autowired
+	UserReportRepo userReportRepo;
+
+	@Override
+	public List<String> getPlanName() {
+		return userReportRepo.getUniquePlanName();
+	}
+
+	@Override
+	public List<String> getPlanStatus() {
+		return userReportRepo.getUniquePlanStatus();
+	}
+
+	@Override
+	public List<UserReport> getReportsBySearch(UserReport userReport) {
+		Example<UserReport> of = Example.of(userReport);
+		return userReportRepo.findAll(of);
+	}
+
+	@Override
+	public void exportToExcel(HttpServletResponse response) throws IOException {
+
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		response.setHeader("Content-Disposition", "attachment; filename=UserReport.xlsx");
+
+		List<UserReport> userList = userReportRepo.findAll();
+
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("UserReport");
+
+		Row headerRow = sheet.createRow(0);
+		headerRow.createCell(0).setCellValue("ID");
+		headerRow.createCell(1).setCellValue("Name");
+		headerRow.createCell(2).setCellValue("Phone");
+		headerRow.createCell(3).setCellValue("Email");
+		headerRow.createCell(4).setCellValue("Plan");
+		headerRow.createCell(5).setCellValue("Status");
+
+		int rowNum = 1;
+		for (UserReport user : userList) {
+			Row row = sheet.createRow(rowNum++);
+			row.createCell(0).setCellValue(user.getId());
+			row.createCell(1).setCellValue(user.getName());
+			row.createCell(2).setCellValue(user.getPhone());
+			row.createCell(3).setCellValue(user.getEmail());
+			row.createCell(4).setCellValue(user.getPlanName());
+			row.createCell(5).setCellValue(user.getPlanStatus());
+		}
+
+		workbook.write(response.getOutputStream());
+		workbook.close();
+	}
+
+	@Override
+	public void exportToPdf(HttpServletResponse response) throws DocumentException, IOException {
+		response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=UserReport.pdf");
+        
+		List<UserReport> userList = userReportRepo.findAll();
+
+		Document document = new Document();
+		PdfWriter.getInstance(document, response.getOutputStream());
+		document.open();
+
+		PdfPTable table = new PdfPTable(6);
+		table.addCell("ID");
+		table.addCell("Name");
+		table.addCell("Phone");
+		table.addCell("Email");
+		table.addCell("PlanName");
+		table.addCell("PlanStatus");
+
+		for (UserReport user : userList) {
+			table.addCell(String.valueOf(user.getId()));
+			table.addCell(user.getName());
+			table.addCell(String.valueOf(user.getPhone()));
+			table.addCell(user.getEmail());
+			table.addCell(user.getPlanName());
+			table.addCell(user.getPlanStatus());
+		}
+
+		document.add(table);
+
+		document.close();
+	}
+
+}

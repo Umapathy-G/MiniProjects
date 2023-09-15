@@ -1,0 +1,87 @@
+package com.example.service;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Service;
+
+import com.example.entities.UserReport;
+import com.example.repo.UserReportRepo;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+@Service
+public class UserReportServiceImpl implements UserReportService {
+
+	@Autowired
+	UserReportRepo userReportRepo;
+
+	@Override
+	public List<String> getPlanName() {
+		return userReportRepo.getUniquePlanName();
+	}
+
+	@Override
+	public List<String> getPlanStatus() {
+		return userReportRepo.getUniquePlanStatus();
+	}
+
+	@Override
+	public List<UserReport> getReportsBySearch(UserReport userReport) {
+		Example<UserReport> of = Example.of(userReport);
+		return userReportRepo.findAll(of);
+	}
+
+	@Override
+	public List<UserReport> exportToExcel(HttpServletResponse response) {
+		List<UserReport> userList = userReportRepo.findAll();
+
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("UserReport");
+
+		Row headerRow = sheet.createRow(0);
+		headerRow.createCell(0).setCellValue("ID");
+		headerRow.createCell(1).setCellValue("Name");
+		headerRow.createCell(2).setCellValue("Price");
+
+		int rowNum = 1;
+		for (UserReport user : userList) {
+			Row row = sheet.createRow(rowNum++);
+			row.createCell(0).setCellValue(user.getId());
+			row.createCell(1).setCellValue(user.getName());
+			row.createCell(2).setCellValue(user.getPhone());
+			row.createCell(3).setCellValue(user.getEmail());
+			row.createCell(4).setCellValue(user.getPlanName());
+			row.createCell(5).setCellValue(user.getEmail());
+		}
+
+		try (FileOutputStream fileOut = new FileOutputStream("userReport.xlsx")) {
+			workbook.write(fileOut);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			workbook.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<UserReport> exportToPdf() {
+		return null;
+	}
+
+}

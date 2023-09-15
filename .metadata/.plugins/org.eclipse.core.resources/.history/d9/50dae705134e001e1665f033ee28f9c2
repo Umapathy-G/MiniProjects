@@ -1,0 +1,8 @@
+package com.example.controlller;
+
+@Conntroller
+public class UserController {
+	
+	
+
+}

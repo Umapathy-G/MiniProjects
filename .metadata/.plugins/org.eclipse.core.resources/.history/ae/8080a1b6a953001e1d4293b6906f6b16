@@ -1,0 +1,67 @@
+package com.example.controller;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import com.example.entities.UserReport;
+import com.example.service.UserReportService;
+import com.itextpdf.text.DocumentException;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+@Controller
+public class ReportController {
+
+	@Autowired
+	UserReportService userReportService;
+
+	@GetMapping("/")
+	public String getReport(Model model) {
+		List<String> planNameList = userReportService.getPlanName();
+		List<String> planStatusList = userReportService.getPlanStatus();
+		model.addAttribute("planNameList", planNameList);
+		model.addAttribute("planStatusList", planStatusList);
+		model.addAttribute("UserReportData", new UserReport());
+		return "index";
+	}
+
+	@PostMapping("/search")
+	public String getSearchResult(UserReport userReport, Model model) {
+		List<UserReport> UserReportData = userReportService.getReportsBySearch(userReport);
+		List<String> planNameList = userReportService.getPlanName();
+		List<String> planStatusList = userReportService.getPlanStatus();
+		model.addAttribute("planNameList", planNameList);
+		model.addAttribute("planStatusList", planStatusList);
+		model.addAttribute("UserReportListData", UserReportData);
+		model.addAttribute("UserReportData", new UserReport());
+		return "index";
+	}
+
+	@GetMapping("/downloadExcel")
+	public void downloadExcel(HttpServletResponse response) {
+		try {
+			userReportService.exportToExcel(response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@GetMapping("/downloadPdf")
+	public void downloadPdf(HttpServletResponse response) {
+
+		try {
+			userReportService.exportToPdf(response);
+		} catch (DocumentException | IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+}

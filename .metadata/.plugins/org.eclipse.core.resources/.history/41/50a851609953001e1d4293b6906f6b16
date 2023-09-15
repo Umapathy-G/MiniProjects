@@ -1,0 +1,45 @@
+package com.example.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.entities.UserReport;
+import com.example.repo.UserReportRepo;
+
+@Service
+public class UserReportServiceImpl implements UserReportService{
+
+	@Autowired
+	UserReportRepo userReportRepo;
+	
+	@Override
+	public List<String> getPlanName() {
+		return userReportRepo.getUniquePlanName();
+	}
+
+	@Override
+	public List<String> getPlanStatus() {
+		return userReportRepo.getUniquePlanStatus();
+	}
+
+	@Override
+	public List<UserReport> getReportsBySearch(UserReport userReport) {
+		if(userReport.equals(null)) {
+			return userReportRepo.findAll();
+		}
+		return null;
+	}
+
+	@Override
+	public List<UserReport> exportToExcel() {
+		return null;
+	}
+
+	@Override
+	public List<UserReport> exportToPdf() {
+		return null;
+	}
+
+}

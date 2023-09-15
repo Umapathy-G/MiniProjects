@@ -1,0 +1,20 @@
+package com.example.entity;
+
+import java.sql.Date;
+
+import jakarta.persistence.Entity;
+
+@Entity
+public class UserAccount {
+
+	private Integer id;
+	private String name;
+	private String email;
+	private Long phone;
+	private String gender;
+	private Date dob;
+	private Long ssn;
+	private String active;
+	private DateTime createdate;
+	private DateTime updatedate;
+}

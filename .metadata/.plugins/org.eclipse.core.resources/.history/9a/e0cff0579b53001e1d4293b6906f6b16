@@ -1,0 +1,23 @@
+package com.example.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.example.entities.SearchCriteria;
+import com.example.entities.UserReport;
+
+@Service
+public interface UserReportService {
+
+	public List<String> getPlanName();
+
+	public List<String> getPlanStatus();
+
+	public List<UserReport> getReportsBySearch(SearchCriteria searchData);
+
+	public List<UserReport> exportToExcel();
+
+	public List<UserReport> exportToPdf();
+
+}

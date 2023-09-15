@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>User Report</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+</head>
+
+<body>
+	<div class="container mt-2 border border-dark border-3">
+		<div class="container">
+			<div class="card m-3 p-3 bg-light text-left">
+				<h3>Reports</h3>
+			</div>
+		</div>
+		<div class="container">
+			<div class="card m-3 p-3 bg-light">
+				<div class="row">
+					<div class="col">
+						<label for="myDropdown">Plan Name</label>
+						<select name="country">
+							<option value="apple" disabled >-Plan Name-</option>
+							<option th:each="planeName : ${planeNameList}" th:value="${planeName}"
+								th:text="${planeName}"></option>
+						</select>
+					</div>
+					<div class="col">
+						<label for="myDropdown">Plan Status</label>
+						<select id="myDropdown" name="fruit">
+							<option value="apple">Apple</option>
+							<option value="banana">Banana</option>
+							<option value="cherry">Cherry</option>
+							<option value="grape">Grape</option>
+							<option value="orange">Orange</option>
+						</select>
+					</div>
+					<div class="col">
+						<label for="myDropdown">Gender</label>
+						<select id="myDropdown" name="fruit">
+							<option value="apple">Apple</option>
+							<option value="banana">Banana</option>
+							<option value="cherry">Cherry</option>
+							<option value="grape">Grape</option>
+							<option value="orange">Orange</option>
+						</select>
+					</div>
+					<div class="col">
+						<label for="myDropdown">Start Date</label>
+						<select id="myDropdown" name="fruit">
+							<option value="apple">Apple</option>
+							<option value="banana">Banana</option>
+							<option value="cherry">Cherry</option>
+							<option value="grape">Grape</option>
+							<option value="orange">Orange</option>
+						</select>
+					</div>
+					<div class="col">
+						<label for="myDropdown">End Date</label>
+						<select id="myDropdown" name="fruit">
+							<option value="apple">Apple</option>
+							<option value="banana">Banana</option>
+							<option value="cherry">Cherry</option>
+							<option value="grape">Grape</option>
+							<option value="orange">Orange</option>
+						</select>
+					</div>
+					<div class="col">
+						<input value="Search" type="submit" class="btn btn-md btn-primary">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
+</body>
+
+</html>
